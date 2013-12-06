@@ -50,3 +50,5 @@
 
 (defmethod etable-draw-cell ((this etable-file-size-cell-renderer) table value is-selected has-focus row col)
   (etable-format-file-size value (etable-this human-readable)))
+
+(provide 'etable-cell-renderer)

@@ -1,8 +1,10 @@
 (require 'eieio)
+(require 'eieio-base)
 (require 'dash)
 (require 'etable-table-model)
 (require 'etable-table-column)
 (require 'etable-table-column-model)
+(require 'etable-cell-renderer)
 
 
 ;;; helper macros
