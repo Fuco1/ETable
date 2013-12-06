@@ -133,8 +133,12 @@ The SLOTs value is captured with variable `this-slot'."
 
 (defmethod etable-draw ((this etable) point)
   (goto-char point)
-  (-when-let (ov (etable-this overlay))
-    (delete-region (overlay-start ov) (overlay-end ov))
+  (-when-let* ((ov (etable-this overlay))
+               (start (overlay-start ov))
+               (end (overlay-end ov)))
+    (let ((inhibit-read-only t))
+      (remove-text-properties start end '(read-only)))
+    (delete-region start end)
     (delete-overlay ov)
     (etable-this overlay :nil))
   (let ((ov (make-overlay (point) (point) nil nil t)))
@@ -147,7 +151,9 @@ The SLOTs value is captured with variable `this-slot'."
   (let* ((ov (etable-this overlay))
          (model (etable-this table-model))
          (col-model (etable-this column-model))
-         (col-separator (make-string (etable-get-column-margin col-model) ? )))
+         (col-separator (make-string (etable-get-column-margin col-model) ? ))
+         (inhibit-read-only t))
+    (remove-text-properties (overlay-start ov) (overlay-end ov) '(read-only))
     (etable-save-table-excursion this
       (delete-region (overlay-start ov) (overlay-end ov))
       (goto-char (overlay-start ov))
@@ -173,10 +179,18 @@ The SLOTs value is captured with variable `this-slot'."
                               (setq string (concat (make-string (/ (1+ extra) 2) ? ) string (make-string (/ extra 2) ? ))))))
                           (insert string))
                         (insert col-separator))
-               (insert "\n")))))
+               (insert "\n"))
+      (delete-char -1))
+    ;; TODO: this removes a possibility of having a table next to some
+    ;; other text.
+    (add-text-properties (overlay-start ov) (overlay-end ov)
+                         '(read-only "You can't edit a table directly"
+                           front-sticky (read-only)))))
 
 (defmethod etable-remove ((this etable))
-  (let ((ov (etable-this overlay)))
+  (let ((ov (etable-this overlay))
+        (inhibit-read-only t))
+    (remove-text-properties (overlay-start ov) (overlay-end ov) '(read-only))
     (delete-region (overlay-start ov) (overlay-end ov))
     (delete-overlay ov)
     (etable-this overlay :nil)))
