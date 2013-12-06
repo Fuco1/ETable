@@ -1,3 +1,8 @@
+(require 'dash)
+(require 'etable-table-model)
+(require 'etable-table-column)
+(require 'etable-table-column-model)
+
 
 ;;; helper macros
 (defmacro etable-this (slot &optional value)

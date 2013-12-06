@@ -1,5 +1,3 @@
-(require 'etable)
-
 
 ;;; table-column implementation
 (defclass etable-table-column ()

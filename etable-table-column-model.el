@@ -1,6 +1,3 @@
-(require 'etable)
-(require 'etable-table-column)
-
 
 ;;; table-column-model interface
 (defclass etable-table-column-model ()
