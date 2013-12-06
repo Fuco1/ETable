@@ -63,6 +63,33 @@ The SLOTs value is captured with variable `this-slot'."
    (overlay :initform nil
             :documentation "Overlay keeping track of bounds of this table.")))
 
+(defvar etable-table-keymap
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "n") 'etable-next-row)
+    (define-key map (kbd "p") 'etable-previous-row)
+    map)
+  "Keymap used inside a table.")
+
+(defun etable-next-row (&optional arg)
+  (interactive "p")
+  (let* ((table (overlay-get (car (overlays-at (point))) 'etable))
+         (cur-cell (etable-get-selected-cell-position table))
+         (goal-col (or (etable-get-goal-column (oref table column-model)) (plist-get cur-cell :col)))
+         (goal-col-align (etable-get-align (etable-get-column (oref table column-model) goal-col)))
+         (new-cell (list :row (+ (plist-get cur-cell :row) arg)
+                         :col goal-col
+                         :offset (cond
+                                  ((eq goal-col-align :left)
+                                   999999)
+                                  ((eq goal-col-align :right)
+                                   0)
+                                  (t (plist-get cur-cell :offset))))))
+    (etable-goto-cell-position table new-cell)))
+
+(defun etable-previous-row (&optional arg)
+  (interactive "p")
+  (etable-next-row (- arg)))
+
 (defun etable-create-table (tbl-model &optional clmn-model)
   (setq tbl-model
         (cond
@@ -102,18 +129,19 @@ The SLOTs value is captured with variable `this-slot'."
              collect s)))
 
 (defmethod etable-get-selected-cell-position ((this etable))
-  (save-excursion
-    (save-restriction
-      (widen)
-      (etable-narrow-to-table this)
-      (let* ((line (line-number-at-pos))
-             (col-positions (etable-get-column-positions this))
-             (col (current-column))
-             (col-and-offset (cl-loop for c in col-positions for i = 0 then (incf i) until (< col c)
-                                      finally return (cons i (- c col)))))
-        (list :row line
-              :col (car col-and-offset)
-              :offset (cdr col-and-offset))))))
+  (when (etable-has-focus this)
+    (save-excursion
+      (save-restriction
+        (widen)
+        (etable-narrow-to-table this)
+        (let* ((line (line-number-at-pos))
+               (col-positions (etable-get-column-positions this))
+               (col (current-column))
+               (col-and-offset (cl-loop for c in col-positions for i = 0 then (incf i) until (< col c)
+                                        finally return (cons i (- c col)))))
+          (list :row (1- line)
+                :col (car col-and-offset)
+                :offset (cdr col-and-offset)))))))
 
 (defmethod etable-goto-cell-position ((this etable) tpos)
   (save-restriction
@@ -146,6 +174,7 @@ The SLOTs value is captured with variable `this-slot'."
   (let ((ov (make-overlay (point) (point) nil nil t)))
     (overlay-put ov 'etable this)
     (overlay-put ov 'face 'sp-pair-overlay-face)
+    (overlay-put ov 'local-map etable-table-keymap)
     (etable-this overlay ov))
   (etable-update this))
 

@@ -34,6 +34,12 @@
 (defmethod etable-get-total-column-width ((this etable-table-column-model))
   (error "Not implemented yet"))
 
+(defmethod etable-get-goal-column ((this etable-table-column-model))
+  (error "Not implemented yet"))
+
+(defmethod etable-set-goal-column ((this etable-table-column-model) goal-col)
+  (error "Not implemented yet"))
+
 
 ;;; default table-column-model implementation
 (defclass etable-default-table-column-model (etable-table-column-model)
@@ -47,7 +53,10 @@
                   :initform 1
                   :type integer
                   :protection :private
-                  :documentation "Margin between each column.")))
+                  :documentation "Margin between each column.")
+   (goal-column :initarg :goal-column
+                :initform nil
+                :documentation "Default goal column used when navigating rows up and down.")))
 
 (defmethod etable-add-column ((this etable-default-table-column-model) column)
   (etable-mutate column-list (vconcat this-slot (vector column))))
@@ -86,6 +95,12 @@
   (let* ((col-num (etable-get-column-count this))
          (margins (* (1- col-num) (etable-get-column-margin this))))
     (apply '+ margins (mapcar (lambda (x) (etable-get-width x)) (etable-this column-list)))))
+
+(defmethod etable-get-goal-column ((this etable-default-table-column-model))
+  (etable-this goal-column))
+
+(defmethod etable-set-goal-column ((this etable-default-table-column-model) goal-col)
+  (etable-this goal-column goal-col))
 
 
 (provide 'etable-table-column-model)
