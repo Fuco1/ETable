@@ -55,12 +55,19 @@ The SLOTs value is captured with variable `this-slot'."
   ((table-model :initarg :table-model
                 :type etable-table-model
                 :protection :private
+                :accessor etable-get-table-model
+                :writer etable-set-table-model
                 :documentation "Table model for this table.")
    (column-model :initarg :column-model
                  :type etable-table-column-model
                  :protection :private
+                 :accessor etable-get-column-model
+                 :writer etable-set-column-model
                  :documentation "Column model for this table.")
    (overlay :initform nil
+            :protection :private
+            :accessor etable-get-overlay
+            :writer etable-set-overlay
             :documentation "Overlay keeping track of bounds of this table.")))
 
 (defvar etable-table-keymap
@@ -74,8 +81,8 @@ The SLOTs value is captured with variable `this-slot'."
   (interactive "p")
   (let* ((table (overlay-get (car (overlays-at (point))) 'etable))
          (cur-cell (etable-get-selected-cell-position table))
-         (goal-col (or (etable-get-goal-column (oref table column-model)) (plist-get cur-cell :col)))
-         (goal-col-align (etable-get-align (etable-get-column (oref table column-model) goal-col)))
+         (goal-col (or (etable-get-goal-column (etable-get-column-model table)) (plist-get cur-cell :col)))
+         (goal-col-align (etable-get-align (etable-get-column (etable-get-column-model table) goal-col)))
          (new-cell (list :row (+ (plist-get cur-cell :row) arg)
                          :col goal-col
                          :offset (cond
