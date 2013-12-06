@@ -16,6 +16,9 @@
 (defmethod etable-get-column ((this etable-table-column-model) index)
   (error "Not implemented yet"))
 
+(defmethod etable-get-column-width ((this etable-table-column-model) index)
+  (error "Not implemented yet"))
+
 (defmethod etable-get-columns ((this etable-table-column-model))
   (error "Not implemented yet"))
 
@@ -41,7 +44,7 @@
                 :documentation "Array of `etable-table-column' objects in this model.")
    ;; (selection-model)
    (column-margin :initarg :column-margin
-                  :initform 0
+                  :initform 1
                   :type integer
                   :protection :private
                   :documentation "Margin between each column.")))
@@ -63,6 +66,9 @@
 
 (defmethod etable-get-column ((this etable-default-table-column-model) index)
   (elt (etable-this column-list) index))
+
+(defmethod etable-get-column-width ((this etable-table-column-model) index)
+  (etable-get-width (elt (etable-this column-list) index)))
 
 (defmethod etable-get-columns ((this etable-default-table-column-model))
   (etable-this column-list))

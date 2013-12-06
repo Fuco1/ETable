@@ -10,6 +10,10 @@ ETable uses strict separation of view and data.  Views are only concerned with d
 
 Nothing useful is implemented yet, so there's nothing to use
 
+Here's a screenshot showing off some features:
+
+![Demo1](http://i.imgur.com/U2YB4LB.png)
+
 # Relation to org-mode tables, orgtbl-mode and similar
 
 This package is not concerned with tables in the org mode sense (that is to serve as an intermediate format for tabular data for later export/processing).  The first and foremost goal is to provide a framework to *present* data to the user, enable her to filter, sort, search, select and copy the data, edit cells, reorder columns and just do all the things we are used to from the classic GUI interfaces.  A possible use-case is display of directory data (aka dired), buffers (aka ibuffer), or any other tabular data, where the org markup would be needless and outright confusing/inconvenient.
