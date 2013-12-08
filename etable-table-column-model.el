@@ -1,3 +1,41 @@
+;;; etable-table-column-model.el --- Model representing columns in ETable.
+
+;; Copyright (C) 2013 Matus Goljer
+
+;; Author: Matus Goljer <matus.goljer@gmail.com>
+;; Maintainer: Matus Goljer <matus.goljer@gmail.com>
+;; Created: 04 Dec 2013
+;; Keywords: convenience
+;; URL: https://github.com/Fuco1/ETable
+
+;; This file is not part of GNU Emacs.
+
+;;; License:
+
+;; This file is part of ETable.
+
+;; ETable is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; ETable is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with ETable  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; This file contains definitions of table column model.  This holds a
+;; list of columns the table displays, provides methods to add, remove
+;; and reorder columns and stores rendering and navigation information
+;; such as goal columns or margins between columns.
+
+;;; Code:
+
 
 ;;; table-column-model interface
 (defclass etable-table-column-model ()
@@ -104,3 +142,4 @@
 
 
 (provide 'etable-table-column-model)
+;;; etable-table-column-model.el ends here

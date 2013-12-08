@@ -1,6 +1,51 @@
+;;; etable.el --- Implementation of javax.swing.JTable for Emacs.
+
+;; Copyright (C) 2013 Matus Goljer
+
+;; Author: Matus Goljer <matus.goljer@gmail.com>
+;; Maintainer: Matus Goljer <matus.goljer@gmail.com>
+;; Created: 04 Dec 2013
+;; Keywords: convenience
+;; URL: https://github.com/Fuco1/ETable
+
+;; This file is not part of GNU Emacs.
+
+;;; License:
+
+;; This file is part of ETable.
+
+;; ETable is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; ETable is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with ETable  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+
+;; For a basic overview, see github readme at
+;; https://github.com/Fuco1/ETable
+
+;; For the complete documentation visit the documentation wiki located
+;; at https://github.com/Fuco1/ETable/wiki
+
+;; If you like this project, you can donate here:
+;; https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CEYP5YVHDRX8C
+
+;;; Code:
+
 (require 'eieio)
 (require 'eieio-base)
+
 (require 'dash)
+
 (require 'etable-table-model)
 (require 'etable-table-column)
 (require 'etable-table-column-model)
@@ -218,6 +263,7 @@ The SLOTs value is captured with variable `this-slot'."
                           (insert string))
                         (insert col-separator))
                (insert "\n"))
+
       (delete-char -1))
     ;; TODO: this removes a possibility of having a table next to some
     ;; other text.
@@ -234,3 +280,4 @@ The SLOTs value is captured with variable `this-slot'."
     (etable-this overlay :nil)))
 
 (provide 'etable)
+;;; etable.el ends here
