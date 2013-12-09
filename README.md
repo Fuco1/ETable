@@ -1,4 +1,4 @@
-# ETable
+# ETable [![Paypal logo](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=TAWNECQR3TTUY)
 
 A JTable for emacs, because it's about time there's a solid, reusable, and flexible enough table rendering package for emacs.
 
@@ -7,8 +7,6 @@ Many packages in emacs simply show you tabular data (ibuffer, dired, many help v
 # How to use
 
 ETable uses strict separation of view and data.  Views are only concerned with displaying "abstract data", while these are provided by Model objects.  This can be viewed as a variation of [MVC design pattern](http://en.wikipedia.org/wiki/Model–view–controller).
-
-Nothing useful is implemented yet, so there's nothing to use
 
 Here's a screenshot showing off some features:
 
