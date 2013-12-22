@@ -126,6 +126,8 @@ The SLOTs value is captured with variable `this-slot'."
     (define-key map (kbd "n") 'etable-next-row)
     (define-key map (kbd "p") 'etable-previous-row)
     (define-key map (kbd "m") 'etable-mark-row)
+    (define-key map (kbd "u") 'etable-unmark-row)
+    (define-key map (kbd "g") 'etable-revert)
     map)
   "Keymap used inside a table.")
 
@@ -155,6 +157,25 @@ The SLOTs value is captured with variable `this-slot'."
          (cur-cel (etable-get-selected-cell-position table))
          (selection (etable-get-selection-model table)))
     (etable-add-selection-interval selection (plist-get cur-cel :row) (plist-get cur-cel :row))))
+
+(defun etable-mark-row (&optional arg)
+  (interactive "p")
+  (let* ((table (overlay-get (car (overlays-at (point))) 'etable))
+         (cur-cel (etable-get-selected-cell-position table))
+         (selection (etable-get-selection-model table)))
+    (etable-add-selection-interval selection (plist-get cur-cel :row) (plist-get cur-cel :row))))
+
+(defun etable-unmark-row (&optional arg)
+  (interactive "p")
+  (let* ((table (overlay-get (car (overlays-at (point))) 'etable))
+         (cur-cel (etable-get-selected-cell-position table))
+         (selection (etable-get-selection-model table)))
+    (etable-remove-selection-interval selection (plist-get cur-cel :row) (plist-get cur-cel :row))))
+
+(defun etable-revert ()
+  (interactive)
+  (let* ((table (overlay-get (car (overlays-at (point))) 'etable)))
+    (etable-update table)))
 
 (defun etable-create-table (tbl-model &optional clmn-model)
   (setq tbl-model
