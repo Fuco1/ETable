@@ -50,6 +50,7 @@
 (require 'etable-table-column)
 (require 'etable-table-column-model)
 (require 'etable-cell-renderer)
+(require 'etable-selection-model)
 
 
 ;;; helper macros
@@ -109,6 +110,11 @@ The SLOTs value is captured with variable `this-slot'."
                  :accessor etable-get-column-model
                  :writer etable-set-column-model
                  :documentation "Column model for this table.")
+   (selection-model :initarg :selection-model
+                    :type etable-selection-model
+                    :protection :private
+                    :accessor etable-get-selection-model
+                    :documentation "Selection model for this table.")
    (overlay :initform nil
             :protection :private
             :accessor etable-get-overlay
@@ -119,6 +125,7 @@ The SLOTs value is captured with variable `this-slot'."
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "n") 'etable-next-row)
     (define-key map (kbd "p") 'etable-previous-row)
+    (define-key map (kbd "m") 'etable-mark-row)
     map)
   "Keymap used inside a table.")
 
@@ -141,6 +148,13 @@ The SLOTs value is captured with variable `this-slot'."
 (defun etable-previous-row (&optional arg)
   (interactive "p")
   (etable-next-row (- arg)))
+
+(defun etable-mark-row (&optional arg)
+  (interactive "p")
+  (let* ((table (overlay-get (car (overlays-at (point))) 'etable))
+         (cur-cel (etable-get-selected-cell-position table))
+         (selection (etable-get-selection-model table)))
+    (etable-add-selection-interval selection (plist-get cur-cel :row) (plist-get cur-cel :row))))
 
 (defun etable-create-table (tbl-model &optional clmn-model)
   (setq tbl-model
@@ -165,7 +179,10 @@ The SLOTs value is captured with variable `this-slot'."
           :column-list (vconcat (cl-loop for i from 1 to width collect
                                          (etable-table-column "TableColumn"
                                                               :model-index (1- i))) nil)))))
-  (etable "Table" :table-model tbl-model :column-model clmn-model))
+  (etable "Table"
+          :table-model tbl-model
+          :column-model clmn-model
+          :selection-model (etable-default-selection-model "SelectionModel")))
 
 (defmethod etable-narrow-to-table ((this etable))
   (let ((ov (etable-this overlay)))
@@ -227,6 +244,7 @@ The SLOTs value is captured with variable `this-slot'."
     (overlay-put ov 'etable this)
     (overlay-put ov 'face 'sp-pair-overlay-face)
     (overlay-put ov 'local-map etable-table-keymap)
+    (overlay-put ov 'priority 1)
     (etable-this overlay ov))
   (etable-update this))
 
@@ -234,6 +252,7 @@ The SLOTs value is captured with variable `this-slot'."
   (let* ((ov (etable-this overlay))
          (model (etable-this table-model))
          (col-model (etable-this column-model))
+         (selection (etable-this selection-model))
          (col-separator (make-string (etable-get-column-margin col-model) ? ))
          (inhibit-read-only t))
     (remove-text-properties (overlay-start ov) (overlay-end ov) '(read-only))
@@ -262,6 +281,10 @@ The SLOTs value is captured with variable `this-slot'."
                               (setq string (concat (make-string (/ (1+ extra) 2) ? ) string (make-string (/ extra 2) ? ))))))
                           (insert string))
                         (insert col-separator))
+               (when (etable-selected-index-p selection i)
+                 (add-text-properties (line-beginning-position)
+                                      (line-end-position)
+                                      '(face dired-mark)))
                (insert "\n"))
 
       (delete-char -1))
@@ -269,7 +292,7 @@ The SLOTs value is captured with variable `this-slot'."
     ;; other text.
     (add-text-properties (overlay-start ov) (overlay-end ov)
                          '(read-only "You can't edit a table directly"
-                           front-sticky (read-only)))))
+                                     front-sticky (read-only)))))
 
 (defmethod etable-remove ((this etable))
   (let ((ov (etable-this overlay))
