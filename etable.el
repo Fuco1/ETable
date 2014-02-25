@@ -46,12 +46,6 @@
 
 (require 'dash)
 
-(require 'etable-table-model)
-(require 'etable-table-column)
-(require 'etable-table-column-model)
-(require 'etable-cell-renderer)
-(require 'etable-selection-model)
-
 
 ;;; helper macros
 (defmacro etable-this (slot &optional value)
@@ -323,5 +317,12 @@ The SLOTs value is captured with variable `this-slot'."
     (delete-overlay ov)
     (etable-this overlay :nil)))
 
+(require 'etable-table-model)
+(require 'etable-table-column)
+(require 'etable-table-column-model)
+(require 'etable-cell-renderer)
+(require 'etable-selection-model)
+
+
 (provide 'etable)
 ;;; etable.el ends here

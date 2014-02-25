@@ -105,3 +105,7 @@
 
 (defmethod etable-set-selection-interval ((this etable-default-selection-model) start end)
   (etable-this selection (list (cons start end))))
+
+
+(provide 'etable-selection-model)
+;;; etable-selection-model.el ends here
