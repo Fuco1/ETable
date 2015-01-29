@@ -121,6 +121,7 @@ The SLOTs value is captured with variable `this-slot'."
     (define-key map (kbd "p") 'etable-previous-row)
     (define-key map (kbd "m") 'etable-mark-row)
     (define-key map (kbd "u") 'etable-unmark-row)
+    (define-key map (kbd "U") 'etable-unmark-all)
     (define-key map (kbd "g") 'etable-revert)
     map)
   "Keymap used inside a table.")
@@ -159,6 +160,13 @@ The SLOTs value is captured with variable `this-slot'."
          (cur-cel (etable-get-selected-cell-position table))
          (selection (etable-get-selection-model table)))
     (etable-remove-selection-interval selection (plist-get cur-cel :row) (plist-get cur-cel :row))
+    (etable-update table)))
+
+(defun etable-unmark-all (&optional arg)
+  (interactive "p")
+  (let* ((table (overlay-get (car (overlays-at (point))) 'etable))
+         (selection (etable-get-selection-model table)))
+    (etable-remove-selection-interval selection (etable-get-min-selection-index selection) (etable-get-max-selection-index selection))
     (etable-update table)))
 
 (defun etable-revert ()
