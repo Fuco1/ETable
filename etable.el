@@ -152,13 +152,6 @@ The SLOTs value is captured with variable `this-slot'."
          (selection (etable-get-selection-model table)))
     (etable-add-selection-interval selection (plist-get cur-cel :row) (plist-get cur-cel :row))))
 
-(defun etable-mark-row (&optional arg)
-  (interactive "p")
-  (let* ((table (overlay-get (car (overlays-at (point))) 'etable))
-         (cur-cel (etable-get-selected-cell-position table))
-         (selection (etable-get-selection-model table)))
-    (etable-add-selection-interval selection (plist-get cur-cel :row) (plist-get cur-cel :row))))
-
 (defun etable-unmark-row (&optional arg)
   (interactive "p")
   (let* ((table (overlay-get (car (overlays-at (point))) 'etable))
