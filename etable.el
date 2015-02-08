@@ -127,9 +127,13 @@ The SLOTs value is captured with variable `this-slot'."
     map)
   "Keymap used inside a table.")
 
+(defun etable-at-point (property &optional point)
+  "Get PROPERTY at POINT."
+  (overlay-get (car (overlays-at (or point (point)))) property))
+
 (defun etable-next-row (&optional arg)
   (interactive "p")
-  (let* ((table (overlay-get (car (overlays-at (point))) 'etable))
+  (let* ((table (etable-at-point 'etable))
          (cur-cell (etable-get-selected-cell-position table))
          (goal-col (or (etable-get-goal-column (etable-get-column-model table)) (plist-get cur-cell :col)))
          (goal-col-align (etable-get-align (etable-get-column (etable-get-column-model table) goal-col)))
@@ -149,7 +153,7 @@ The SLOTs value is captured with variable `this-slot'."
 
 (defun etable-mark-row (&optional arg)
   (interactive "p")
-  (let* ((table (overlay-get (car (overlays-at (point))) 'etable))
+  (let* ((table (etable-at-point 'etable))
          (cur-cel (etable-get-selected-cell-position table))
          (selection (etable-get-selection-model table)))
     (etable-add-selection-interval selection (plist-get cur-cel :row) (plist-get cur-cel :row))
@@ -157,7 +161,7 @@ The SLOTs value is captured with variable `this-slot'."
 
 (defun etable-unmark-row (&optional arg)
   (interactive "p")
-  (let* ((table (overlay-get (car (overlays-at (point))) 'etable))
+  (let* ((table (etable-at-point 'etable))
          (cur-cel (etable-get-selected-cell-position table))
          (selection (etable-get-selection-model table)))
     (etable-remove-selection-interval selection (plist-get cur-cel :row) (plist-get cur-cel :row))
@@ -165,14 +169,14 @@ The SLOTs value is captured with variable `this-slot'."
 
 (defun etable-unmark-all (&optional arg)
   (interactive "p")
-  (let* ((table (overlay-get (car (overlays-at (point))) 'etable))
+  (let* ((table (etable-at-point 'etable))
          (selection (etable-get-selection-model table)))
     (etable-remove-selection-interval selection (etable-get-min-selection-index selection) (etable-get-max-selection-index selection))
     (etable-update table)))
 
 (defun etable-toggle-marks (&optional arg)
   (interactive "p")
-  (let* ((table (overlay-get (car (overlays-at (point))) 'etable))
+  (let* ((table (etable-at-point 'etable))
          (selection (etable-get-selection-model table)))
     (dotimes (i (etable-get-row-count (etable-get-table-model table)))
       (if (etable-selected-index-p selection i)
@@ -182,7 +186,7 @@ The SLOTs value is captured with variable `this-slot'."
 
 (defun etable-revert ()
   (interactive)
-  (let* ((table (overlay-get (car (overlays-at (point))) 'etable)))
+  (let* ((table (etable-at-point 'etable)))
     (etable-update table)))
 
 (defun etable-create-table (tbl-model &optional clmn-model)
