@@ -137,7 +137,7 @@ The SLOTs value is captured with variable `this-slot'."
          (cur-cell (etable-get-selected-cell-position table))
          (goal-col (or (etable-get-goal-column (etable-get-column-model table)) (plist-get cur-cell :col)))
          (goal-col-align (etable-get-align (etable-get-column (etable-get-column-model table) goal-col)))
-         (new-cell (list :row (+ (plist-get cur-cell :row) arg)
+         (new-cell (list :row (+ (plist-get cur-cell :row) (or arg 1))
                          :col goal-col
                          :offset (cond
                                   ((eq goal-col-align :left)
@@ -149,7 +149,7 @@ The SLOTs value is captured with variable `this-slot'."
 
 (defun etable-previous-row (&optional arg)
   (interactive "p")
-  (etable-next-row (- arg)))
+  (etable-next-row (- (or arg 1))))
 
 (defun etable-mark-row (&optional arg)
   (interactive "p")
