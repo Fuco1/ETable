@@ -46,6 +46,16 @@
 
 (require 'dash)
 
+(defface etable-row-unmarked-face
+  '((t (:inherit highlight)))
+  "The unmarked rows face."
+  :group 'etable)
+
+(defface etable-row-marked-face
+  '((t (:inherit warning)))
+  "The marked rows face."
+  :group 'etable)
+
 
 ;;; helper macros
 (defmacro etable-this (slot &optional value)
@@ -277,7 +287,7 @@ The SLOTs value is captured with variable `this-slot'."
     (etable-this overlay :nil))
   (let ((ov (make-overlay (point) (point) nil nil t)))
     (overlay-put ov 'etable this)
-    (overlay-put ov 'face 'sp-pair-overlay-face)
+    (overlay-put ov 'face 'etable-row-unmarked-face)
     (overlay-put ov 'local-map etable-table-keymap)
     (overlay-put ov 'priority 1)
     (etable-this overlay ov))
@@ -319,7 +329,7 @@ The SLOTs value is captured with variable `this-slot'."
                (when (etable-selected-index-p selection i)
                  (add-text-properties (line-beginning-position)
                                       (line-end-position)
-                                      '(face dired-mark)))
+                                      '(face etable-row-marked-face)))
                (insert "\n"))
 
       (delete-char -1))
