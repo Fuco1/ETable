@@ -157,6 +157,7 @@ The SLOTs value is captured with variable `this-slot'."
          (cur-cel (etable-get-selected-cell-position table))
          (selection (etable-get-selection-model table)))
     (etable-add-selection-interval selection (plist-get cur-cel :row) (plist-get cur-cel :row))
+    (etable-next-row)
     (etable-update table)))
 
 (defun etable-unmark-row (&optional arg)
@@ -165,6 +166,7 @@ The SLOTs value is captured with variable `this-slot'."
          (cur-cel (etable-get-selected-cell-position table))
          (selection (etable-get-selection-model table)))
     (etable-remove-selection-interval selection (plist-get cur-cel :row) (plist-get cur-cel :row))
+    (etable-next-row)
     (etable-update table)))
 
 (defun etable-unmark-all (&optional arg)
