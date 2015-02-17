@@ -46,6 +46,16 @@
 
 (require 'dash)
 
+(defface etable-row-unmarked-face
+  '((t (:inherit highlight)))
+  "The unmarked rows face."
+  :group 'etable)
+
+(defface etable-row-marked-face
+  '((t (:inherit warning)))
+  "The marked rows face."
+  :group 'etable)
+
 
 ;;; helper macros
 (defmacro etable-this (slot &optional value)
@@ -121,17 +131,23 @@ The SLOTs value is captured with variable `this-slot'."
     (define-key map (kbd "p") 'etable-previous-row)
     (define-key map (kbd "m") 'etable-mark-row)
     (define-key map (kbd "u") 'etable-unmark-row)
+    (define-key map (kbd "U") 'etable-unmark-all)
+    (define-key map (kbd "t") 'etable-toggle-marks)
     (define-key map (kbd "g") 'etable-revert)
     map)
   "Keymap used inside a table.")
 
+(defun etable-at-point (property &optional point)
+  "Get PROPERTY at POINT."
+  (overlay-get (car (overlays-at (or point (point)))) property))
+
 (defun etable-next-row (&optional arg)
   (interactive "p")
-  (let* ((table (overlay-get (car (overlays-at (point))) 'etable))
+  (let* ((table (etable-at-point 'etable))
          (cur-cell (etable-get-selected-cell-position table))
          (goal-col (or (etable-get-goal-column (etable-get-column-model table)) (plist-get cur-cell :col)))
          (goal-col-align (etable-get-align (etable-get-column (etable-get-column-model table) goal-col)))
-         (new-cell (list :row (+ (plist-get cur-cell :row) arg)
+         (new-cell (list :row (+ (plist-get cur-cell :row) (or arg 1))
                          :col goal-col
                          :offset (cond
                                   ((eq goal-col-align :left)
@@ -143,32 +159,46 @@ The SLOTs value is captured with variable `this-slot'."
 
 (defun etable-previous-row (&optional arg)
   (interactive "p")
-  (etable-next-row (- arg)))
+  (etable-next-row (- (or arg 1))))
 
 (defun etable-mark-row (&optional arg)
   (interactive "p")
-  (let* ((table (overlay-get (car (overlays-at (point))) 'etable))
+  (let* ((table (etable-at-point 'etable))
          (cur-cel (etable-get-selected-cell-position table))
          (selection (etable-get-selection-model table)))
-    (etable-add-selection-interval selection (plist-get cur-cel :row) (plist-get cur-cel :row))))
-
-(defun etable-mark-row (&optional arg)
-  (interactive "p")
-  (let* ((table (overlay-get (car (overlays-at (point))) 'etable))
-         (cur-cel (etable-get-selected-cell-position table))
-         (selection (etable-get-selection-model table)))
-    (etable-add-selection-interval selection (plist-get cur-cel :row) (plist-get cur-cel :row))))
+    (etable-add-selection-interval selection (plist-get cur-cel :row) (plist-get cur-cel :row))
+    (etable-next-row)
+    (etable-update table)))
 
 (defun etable-unmark-row (&optional arg)
   (interactive "p")
-  (let* ((table (overlay-get (car (overlays-at (point))) 'etable))
+  (let* ((table (etable-at-point 'etable))
          (cur-cel (etable-get-selected-cell-position table))
          (selection (etable-get-selection-model table)))
-    (etable-remove-selection-interval selection (plist-get cur-cel :row) (plist-get cur-cel :row))))
+    (etable-remove-selection-interval selection (plist-get cur-cel :row) (plist-get cur-cel :row))
+    (etable-next-row)
+    (etable-update table)))
+
+(defun etable-unmark-all (&optional arg)
+  (interactive "p")
+  (let* ((table (etable-at-point 'etable))
+         (selection (etable-get-selection-model table)))
+    (etable-remove-selection-interval selection (etable-get-min-selection-index selection) (etable-get-max-selection-index selection))
+    (etable-update table)))
+
+(defun etable-toggle-marks (&optional arg)
+  (interactive "p")
+  (let* ((table (etable-at-point 'etable))
+         (selection (etable-get-selection-model table)))
+    (dotimes (i (etable-get-row-count (etable-get-table-model table)))
+      (if (etable-selected-index-p selection i)
+          (etable-remove-selection-interval selection i i)
+        (etable-add-selection-interval selection i i)))
+    (etable-update table)))
 
 (defun etable-revert ()
   (interactive)
-  (let* ((table (overlay-get (car (overlays-at (point))) 'etable)))
+  (let* ((table (etable-at-point 'etable)))
     (etable-update table)))
 
 (defun etable-create-table (tbl-model &optional clmn-model)
@@ -257,7 +287,7 @@ The SLOTs value is captured with variable `this-slot'."
     (etable-this overlay :nil))
   (let ((ov (make-overlay (point) (point) nil nil t)))
     (overlay-put ov 'etable this)
-    (overlay-put ov 'face 'sp-pair-overlay-face)
+    (overlay-put ov 'face 'etable-row-unmarked-face)
     (overlay-put ov 'local-map etable-table-keymap)
     (overlay-put ov 'priority 1)
     (etable-this overlay ov))
@@ -299,7 +329,7 @@ The SLOTs value is captured with variable `this-slot'."
                (when (etable-selected-index-p selection i)
                  (add-text-properties (line-beginning-position)
                                       (line-end-position)
-                                      '(face dired-mark)))
+                                      '(face etable-row-marked-face)))
                (insert "\n"))
 
       (delete-char -1))

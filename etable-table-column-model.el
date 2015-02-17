@@ -93,7 +93,7 @@
                   :protection :private
                   :documentation "Margin between each column.")
    (goal-column :initarg :goal-column
-                :initform nil
+                :initform 0
                 :documentation "Default goal column used when navigating rows up and down.")))
 
 (defmethod etable-add-column ((this etable-default-table-column-model) column)
