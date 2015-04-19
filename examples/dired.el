@@ -9,8 +9,9 @@
                                                                                                  :renderer (etable-date-cell-renderer "DateRenderer"))
                                                                             (etable-table-column "filename" :width 40 :align 'left :model-index 0))
                                                               :goal-column 3))
-       (dired-table (etable-create-table (--map (cons (f-filename it) (file-attributes it)) (f-entries "/usr/bin"))
-                                         dired-column-model)))
+       (dired-table-data (etable-list-to-vector (--map (cons (f-filename it) (file-attributes it)) (f-entries "/usr/bin"))))
+       (dired-table-model (etable-default-table-model "DiredTableModel" :table-data dired-table-data :column-ids ["perm" "size" "lastmod" "filename"]))
+       (dired-table (etable-create-table dired-table-model dired-column-model)))
   (with-current-buffer-window "*etable-dired*"
                               nil
                               nil
