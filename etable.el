@@ -206,7 +206,7 @@ The SLOTs value is captured with variable `this-slot'."
         (cond
          ((and (object-p tbl-model)
                (object-of-class-p tbl-model 'etable-table-model))
-          etable-table-model)
+          tbl-model)
          ((listp tbl-model)
           (etable-default-table-model
            "TableModel"
