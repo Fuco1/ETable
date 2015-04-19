@@ -112,8 +112,8 @@ These are: A, B, ..., Z, AA, ..., AZ, BA, ..."
   (etable-aref (etable-this table-data) row col))
 
 (defmethod etable-get-column-name ((this etable-default-table-model) col)
-  (--if-let (> (length (etable-this column-ids)) 0)
-      (elt it col)
+  (if (> (length (etable-this column-ids)) 0)
+      (elt (etable-this column-ids) col)
     (call-next-method)))
 
 (defmethod etable-is-cell-editable ((this etable-default-table-model) row col)

@@ -304,6 +304,24 @@ The SLOTs value is captured with variable `this-slot'."
     (etable-save-table-excursion this
       (delete-region (overlay-start ov) (overlay-end ov))
       (goto-char (overlay-start ov))
+      (cl-loop for j from 0 to (1- (etable-get-column-count col-model)) do
+               (let* ((col (etable-get-column col-model j))
+                      (width (etable-get-width col))
+                      (align (etable-get-align col))
+                      (string (etable-get-column-name model j)))
+                 (when (> (length string) width)
+                   (setq string (concat (substring string 0 (- width 3)) "...")))
+                 (let ((extra (- width (length string))))
+                   (cond
+                    ((eq align 'left)
+                     (setq string (concat string (make-string extra ? ))))
+                    ((eq align 'right)
+                     (setq string (concat (make-string extra ? ) string)))
+                    ((eq align 'center)
+                     (setq string (concat (make-string (/ (1+ extra) 2) ? ) string (make-string (/ extra 2) ? ))))))
+                 (insert string))
+               (insert col-separator))
+      (insert "\n")
       (cl-loop for i from 0 to (1- (etable-get-row-count model)) do
                (cl-loop for j from 0 to (1- (etable-get-column-count col-model)) do
                         (let* ((col (etable-get-column col-model j))
