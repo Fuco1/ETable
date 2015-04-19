@@ -86,9 +86,6 @@ These are: A, B, ..., Z, AA, ..., AZ, BA, ..."
 (defmethod etable-is-cell-editable ((this etable-abstract-table-model) row col)
   nil)
 
-(defmethod etable-set-value-at ((this etable-abstract-table-model) row col value)
-  ())
-
 
 ;;; default table-model implementation using vectors
 ;; TODO: add methods to add/remove rows or columns
