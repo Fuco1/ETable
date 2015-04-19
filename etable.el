@@ -150,9 +150,9 @@ The SLOTs value is captured with variable `this-slot'."
          (new-cell (list :row (+ (plist-get cur-cell :row) (or arg 1))
                          :col goal-col
                          :offset (cond
-                                  ((eq goal-col-align :left)
+                                  ((eq goal-col-align 'left)
                                    999999)
-                                  ((eq goal-col-align :right)
+                                  ((eq goal-col-align 'right)
                                    0)
                                   (t (plist-get cur-cell :offset))))))
     (etable-goto-cell-position table new-cell)))
@@ -318,11 +318,11 @@ The SLOTs value is captured with variable `this-slot'."
                             (setq string (concat (substring string 0 (- width 3)) "...")))
                           (let ((extra (- width (length string))))
                             (cond
-                             ((eq align :left)
+                             ((eq align 'left)
                               (setq string (concat string (make-string extra ? ))))
-                             ((eq align :right)
+                             ((eq align 'right)
                               (setq string (concat (make-string extra ? ) string)))
-                             ((eq align :center)
+                             ((eq align 'center)
                               (setq string (concat (make-string (/ (1+ extra) 2) ? ) string (make-string (/ extra 2) ? ))))))
                           (insert string))
                         (insert col-separator))
