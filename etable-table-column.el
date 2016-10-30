@@ -45,7 +45,7 @@
           :protection :private
           :documentation "Width of this column.")
    (align :initarg :align
-          :initform :right
+          :initform 'right
           :protection :private
           :documentation "Type of vertical alignment.")
    (model-index :initarg :model-index

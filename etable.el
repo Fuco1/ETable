@@ -152,9 +152,9 @@ The SLOTs value is captured with variable `this-slot'."
          (new-cell (list :row (+ (plist-get cur-cell :row) (or arg 1))
                          :col goal-col
                          :offset (cond
-                                  ((eq goal-col-align :left)
+                                  ((eq goal-col-align 'left)
                                    999999)
-                                  ((eq goal-col-align :right)
+                                  ((eq goal-col-align 'right)
                                    0)
                                   (t (plist-get cur-cell :offset))))))
     (etable-goto-cell-position table new-cell)))
@@ -208,7 +208,7 @@ The SLOTs value is captured with variable `this-slot'."
         (cond
          ((and (object-p tbl-model)
                (object-of-class-p tbl-model 'etable-table-model))
-          etable-table-model)
+          tbl-model)
          ((listp tbl-model)
           (etable-default-table-model
            "TableModel"
@@ -306,6 +306,24 @@ The SLOTs value is captured with variable `this-slot'."
     (etable-save-table-excursion this
       (delete-region (overlay-start ov) (overlay-end ov))
       (goto-char (overlay-start ov))
+      (cl-loop for j from 0 to (1- (etable-get-column-count col-model)) do
+               (let* ((col (etable-get-column col-model j))
+                      (width (etable-get-width col))
+                      (align (etable-get-align col))
+                      (string (etable-get-column-name model j)))
+                 (when (> (length string) width)
+                   (setq string (concat (substring string 0 (- width 3)) "...")))
+                 (let ((extra (- width (length string))))
+                   (cond
+                    ((eq align 'left)
+                     (setq string (concat string (make-string extra ? ))))
+                    ((eq align 'right)
+                     (setq string (concat (make-string extra ? ) string)))
+                    ((eq align 'center)
+                     (setq string (concat (make-string (/ (1+ extra) 2) ? ) string (make-string (/ extra 2) ? ))))))
+                 (insert string))
+               (insert col-separator))
+      (insert "\n")
       (cl-loop for i from 0 to (1- (etable-get-row-count model)) do
                (cl-loop for j from 0 to (1- (etable-get-column-count col-model)) do
                         (let* ((col (etable-get-column col-model j))
@@ -320,11 +338,11 @@ The SLOTs value is captured with variable `this-slot'."
                             (setq string (concat (substring string 0 (- width 3)) "...")))
                           (let ((extra (- width (length string))))
                             (cond
-                             ((eq align :left)
+                             ((eq align 'left)
                               (setq string (concat string (make-string extra ? ))))
-                             ((eq align :right)
+                             ((eq align 'right)
                               (setq string (concat (make-string extra ? ) string)))
-                             ((eq align :center)
+                             ((eq align 'center)
                               (setq string (concat (make-string (/ (1+ extra) 2) ? ) string (make-string (/ extra 2) ? ))))))
                           (insert string))
                         (insert col-separator))
